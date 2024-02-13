@@ -1,0 +1,30 @@
+#!/bin/bash
+
+FUNCTION=$1
+
+function usage() {
+    echo "USAGE: "
+    echo "       tlstoolbox listsans HOST PORT"
+}
+
+
+function listsans() {
+    # takes host port as args
+    echo "SAN entries for $1:$2"
+    openssl s_client -connect "$1":"$2" < /dev/null 2>/dev/null \
+	| openssl x509 -noout -text 2>/dev/null \
+	| perl -ne 'm/DNS/ && s/(, *|^ *DNS:)//g && print(join("\n",split /DNS:/))'
+}
+
+
+function main() {
+    if [[ "$FUNCTION" = "listsans" ]]; then
+	HOST=$2
+	PORT=$3
+	listsans "$HOST" "$PORT"
+    else
+	usage
+    fi
+}
+
+main "$@"
