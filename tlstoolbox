@@ -4,8 +4,10 @@ FUNCTION=$1
 
 function usage() {
     echo "USAGE: "
-    echo "       tlstoolbox listsans  HOST PORT"
-    echo "       tlstoolbox showchain HOST PORT"
+    echo "       tlstoolbox listsans  HOST [PORT]"
+    echo "       tlstoolbox showchain HOST [PORT]"
+    echo "       tlstoolbox showcerts HOST [PORT]"
+    echo "       tlstoolbox viewcert  FILENAME"
 }
 
 
@@ -27,13 +29,20 @@ function showchain() {
     showcerts "$1" "$2" | perl -ne '/^ (\d+ .+)$/ && print "$1\n"'
 }
 
+function viewcert() {
+    openssl x509 -in "$1" -text -noout
+}
 
 function main() {
-    kHOST_PORT_REGEX='^(listsans|showchain)$'
+    kHOST_PORT_REGEX='^(listsans|showchain|showcerts)$'
+    kCRTFILE_REGEX='^(viewcert)$'
     if [[ "$FUNCTION" =~ $kHOST_PORT_REGEX ]]; then
 	HOST=$2
 	PORT="${3:-443}"
 	"$FUNCTION" "$HOST" "$PORT"
+    elif [[ "$FUNCTION" =~ $kCRTFILE_REGEX ]]; then
+	FILE=$2
+	"$FUNCTION" "$FILE"
     else
 	usage
     fi
