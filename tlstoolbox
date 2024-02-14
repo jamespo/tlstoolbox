@@ -29,13 +29,10 @@ function showchain() {
 
 
 function main() {
-    if [[ "$FUNCTION" = "listsans" ]]; then
+    kHOST_PORT_REGEX='^(listsans|showchain)$'
+    if [[ "$FUNCTION" =~ $kHOST_PORT_REGEX ]]; then
 	HOST=$2
-	PORT=$3
-	listsans "$HOST" "$PORT"
-    elif [[ "$FUNCTION" = "showchain" ]]; then
-	HOST=$2
-	PORT=$3
+	PORT="${3:-443}"
 	"$FUNCTION" "$HOST" "$PORT"
     else
 	usage
