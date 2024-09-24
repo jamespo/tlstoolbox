@@ -37,7 +37,10 @@ function main() {
     kHOST_PORT_REGEX='^(listsans|showchain|showcerts)$'
     kCRTFILE_REGEX='^(viewcert)$'
     if [[ "$FUNCTION" =~ $kHOST_PORT_REGEX ]]; then
-	HOST=$2
+	# removing leading https:// if present
+	HOST="${2//https:\/\//}"
+	echo $HOST
+	# default to port 443 if no port supplied
 	PORT="${3:-443}"
 	"$FUNCTION" "$HOST" "$PORT"
     elif [[ "$FUNCTION" =~ $kCRTFILE_REGEX ]]; then
