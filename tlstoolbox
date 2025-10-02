@@ -4,10 +4,11 @@ FUNCTION=$1
 
 function usage() {
     echo "USAGE: "
-    echo "       tlstoolbox listsans  HOST [PORT]"
-    echo "       tlstoolbox showchain HOST [PORT]"
-    echo "       tlstoolbox showcerts HOST [PORT]"
-    echo "       tlstoolbox viewcert  FILENAME"
+    echo "       tlstoolbox listsans      HOST [PORT]"
+    echo "       tlstoolbox showchain     HOST [PORT]"
+    echo "       tlstoolbox showcerts     HOST [PORT]"
+    echo "       tlstoolbox viewcert      FILENAME"
+    echo "       tlstoolbox viewcertexts  FILENAME"
 }
 
 
@@ -33,13 +34,19 @@ function viewcert() {
     openssl x509 -in "$1" -text -noout
 }
 
+function viewcertexts() {
+    openssl x509 -in "$1" -text -noout \
+	| perl -ne '/^            (X509.+):/ && print "- $1\n"'
+}
+
+
 function main() {
     kHOST_PORT_REGEX='^(listsans|showchain|showcerts)$'
-    kCRTFILE_REGEX='^(viewcert)$'
+    kCRTFILE_REGEX='^(viewcert)'
     if [[ "$FUNCTION" =~ $kHOST_PORT_REGEX ]]; then
 	# removing leading https:// if present
 	HOST="${2//https:\/\//}"
-	echo $HOST
+	echo "$HOST"
 	# default to port 443 if no port supplied
 	PORT="${3:-443}"
 	"$FUNCTION" "$HOST" "$PORT"
